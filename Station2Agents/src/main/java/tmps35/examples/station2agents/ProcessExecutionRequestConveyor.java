@@ -29,13 +29,44 @@ public class ProcessExecutionRequestConveyor extends AchieveREResponder {
     @Override
     protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
        //This function should be implemented by the students
-        return null; //This line of code should be replace by the appropriate line
+        ACLMessage reply = request.createReply();
+        if (ca.isBusy()) {
+            reply.setPerformative(ACLMessage.REFUSE);
+        } else {
+            reply.setPerformative(ACLMessage.AGREE);
+            ca.setBusy(true);
+        }
+               
+        return reply; //This line of code should be replace by the appropriate line
     }
 
     @Override
     protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) throws FailureException {
          //This function should be implemented by the students
-        return null; //This line of code should be replace by the appropriate line
+        ACLMessage reply = request.createReply();
+        String content = request.getContent();
+        switch (content) {
+            case "moveStoS":
+                ca.getConveyor().moveFromStackerToStation();
+                reply.setPerformative(ACLMessage.INFORM);
+                break;
+            
+            case "MoveToFB":
+                if (ca.getConveyor().isPartAtStation()) {
+                    ca.getConveyor().moveFromStationToFinalBuffer();
+                    reply.setPerformative(ACLMessage.INFORM);
+                } else {
+                    reply.setPerformative(ACLMessage.FAILURE);
+                    reply.setContent("No part at puncher to eject");
+                }
+                break;
+            default:
+                reply.setPerformative(ACLMessage.FAILURE);
+                reply.setContent("Unrecongnizable command");
+        }
+        
+        ca.setBusy(false); 
+        return reply; //This line of code should be replace by the appropriate line
     }
 
 }

@@ -45,29 +45,17 @@ public class ProcessExecutionRequestPuncher extends AchieveREResponder {
         
         ACLMessage reply = request.createReply();
         String content = request.getContent();
-        switch (content) {
-            case "moveEtoP":
-                if (pa.getPuncher().isPartAtPuncher()) {
-                    pa.getPuncher().moveFromEntryToPuncher();
-                    reply.setPerformative(ACLMessage.INFORM);
-                } else {
-                    reply.setPerformative(ACLMessage.FAILURE);
-                    reply.setContent("No part at entry to move");
-                }
-                break;
-            case "eject":
-                if (pa.getPuncher().isPartAtPuncher()) {
-                    //pa.getPuncher().moveFromEntryToPuncher;
-                    reply.setPerformative(ACLMessage.INFORM);
-                } else {
-                    reply.setPerformative(ACLMessage.FAILURE);
-                    reply.setContent("No part at puncher to eject");
-                }
-                break;
-            default:
-                reply.setPerformative(ACLMessage.FAILURE);
-                reply.setContent("Unrecongnizable command");
+        
+        int punchnum = Integer.parseInt(content);
+        
+        if (pa.getPuncher().isPartAtPuncher()) {
+            pa.getPuncher().punch(punchnum);
+            reply.setPerformative(ACLMessage.INFORM);
+        } else {
+            reply.setPerformative(ACLMessage.FAILURE);
+            reply.setContent("No part at machine to work on!");
         }
+        
         pa.setBusy(false);
         return reply;
         

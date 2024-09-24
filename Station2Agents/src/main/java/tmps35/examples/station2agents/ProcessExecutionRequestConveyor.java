@@ -30,6 +30,9 @@ public class ProcessExecutionRequestConveyor extends AchieveREResponder {
     protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
        //This function should be implemented by the students
         ACLMessage reply = request.createReply();
+        
+        // Check if Conveyor agent is busy
+        // If not agree to action and set it to busy
         if (ca.isBusy()) {
             reply.setPerformative(ACLMessage.REFUSE);
         } else {
@@ -37,7 +40,7 @@ public class ProcessExecutionRequestConveyor extends AchieveREResponder {
             ca.setBusy(true);
         }
                
-        return reply; //This line of code should be replace by the appropriate line
+        return reply; 
     }
 
     @Override
@@ -45,12 +48,15 @@ public class ProcessExecutionRequestConveyor extends AchieveREResponder {
          //This function should be implemented by the students
         ACLMessage reply = request.createReply();
         String content = request.getContent();
+        
         switch (content) {
+            // move from Stacker (Eingangsobjekt) to Station 
             case "moveStoS":
                 ca.getConveyor().moveFromStackerToStation();
                 reply.setPerformative(ACLMessage.INFORM);
                 break;
             
+            // Move the Objekt to the final Buffer 
             case "MoveToFB":
                 if (ca.getConveyor().isPartAtStation()) {
                     ca.getConveyor().moveFromStationToFinalBuffer();
@@ -66,7 +72,7 @@ public class ProcessExecutionRequestConveyor extends AchieveREResponder {
         }
         
         ca.setBusy(false); 
-        return reply; //This line of code should be replace by the appropriate line
+        return reply; 
     }
 
 }

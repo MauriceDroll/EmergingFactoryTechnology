@@ -31,23 +31,32 @@ public class ProcessExecutionRequestOrchestrator extends AchieveREResponder {
 
     @Override
     protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
-        //This function should be implemented by the students
+        // First create the reply
         ACLMessage reply = request.createReply();
+        
+        // Check if busy
         if (orch.isBusy()) {
             reply.setPerformative(ACLMessage.REFUSE);
+            
+        // Control the things to do
+        // Move Conveyor 2 and move to Station
         } else if (request.getContent().equalsIgnoreCase("execute")) {
             reply.setPerformative(ACLMessage.AGREE);
             
+            // Move Conveyor 2 and move to Station
             ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
             msg.addReceiver(new AID("ConveyorST2", false));
             msg.setContent("moveStoS");
             Behaviour moveToStation = new AchieveREInitiator(myAgent, msg);
             
+            // Move the Maschine 2
             ACLMessage msg_2 = new ACLMessage(ACLMessage.REQUEST);
             msg_2.addReceiver(new AID("MachineST2", false));
             msg_2.setContent("3000");
             Behaviour machineBehavior = new AchieveREInitiator(myAgent, msg_2);
             
+            
+            // Move the Maschine to FB2
             ACLMessage msg4 = new ACLMessage(ACLMessage.REQUEST);
             msg4.addReceiver(new AID("ConveyorST2", false));
             msg4.setContent("MoveToFB");
@@ -81,6 +90,7 @@ public class ProcessExecutionRequestOrchestrator extends AchieveREResponder {
 
             };
             
+            // Add the behaviors
             SequentialBehaviour seq = new SequentialBehaviour();
             seq.addSubBehaviour(moveToStation);
             seq.addSubBehaviour(machineBehavior);
